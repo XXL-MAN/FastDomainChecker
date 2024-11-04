@@ -31,8 +31,7 @@ Este repositorio contiene un script en Python que permite verificar si dominios 
 ## Instalación
 
 Instala los módulos ejecutando:
-```bash
-pip install python-whois dnspython
+- pip install python-whois dnspython
 
 ## Uso
 Para ejecutar el script, utiliza el siguiente comando en la terminal:
