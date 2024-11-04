@@ -53,9 +53,11 @@ co
 
 La salida se imprimirá en pantalla y se guardará en un archivo de texto llamado output_YYYYMMDDHHMMSS.txt, donde YYYYMMDDHHMMSS representa la fecha y hora de ejecución del script. El archivo de salida incluirá únicamente los dominios no registrados, en el siguiente formato:
 
+```
 example.com está DISPONIBLE
 example.org está DISPONIBLE
 website.net está DISPONIBLE
+```
 
 ## Notas
 Delay: El script introduce un retardo aleatorio en la verificación whois para evitar sobrecargar los servidores y cumplir con las políticas de uso de whois.
