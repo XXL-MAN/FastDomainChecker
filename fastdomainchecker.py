@@ -1,10 +1,3 @@
-import whois
-import time
-import sys
-import random
-import dns.resolver
-from datetime import datetime
-
 """
 Este script permite verificar si dominios (o dominios extraídos de correos electrónicos) están registrados o no, utilizando consultas DNS y verificaciones `whois`.
 
@@ -30,6 +23,11 @@ Este script permite verificar si dominios (o dominios extraídos de correos elec
 python script.py archivo_dominio.txt [extensions.txt]
 
 """
+import whois
+import time
+import sys
+import dns.resolver
+from datetime import datetime
 
 def fast_domain_checker(domain_name, delay=True):
     """
@@ -37,21 +35,32 @@ def fast_domain_checker(domain_name, delay=True):
     Si no encuentra estos registros, verifica con whois.
     """
     try:
-        dns.resolver.resolve(domain_name, 'MX')
+        # Primero intenta resolver registros MX
+        dns.resolver.query(domain_name, 'MX')
         return True
-    except:
-        try:
-            dns.resolver.resolve(domain_name, 'NS')
-            return True
-        except:
-            try:
-                w = whois.whois(domain_name)
-                if delay:
-                    time.sleep(60)
-            except Exception:
-                return False
-            else:
-                return bool(w.domain_name)
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        pass  # No hay respuesta, continuamos a NS
+    except Exception as e:
+        print(f"Error resolviendo {domain_name}: {e}")
+    
+    try:
+        # Intenta resolver registros NS
+        dns.resolver.query(domain_name, 'NS')
+        return True
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        pass  # No hay respuesta
+    except Exception as e:
+        print(f"Error resolviendo {domain_name}: {e}")
+
+    # No se encontraron registros DNS, intentamos whois
+    try:
+        w = whois.whois(domain_name)
+        if delay:
+            time.sleep(1)  # Delay entre consultas WHOIS
+        return bool(w.domain_name)
+    except Exception as e:
+        print(f"Error consultando WHOIS para {domain_name}")
+        return False
 
 def is_registered(domain_name):
     """
@@ -59,10 +68,10 @@ def is_registered(domain_name):
     """
     try:
         w = whois.whois(domain_name)
-    except Exception:
-        return False
-    else:
         return bool(w.domain_name)
+    except Exception as e:
+        print(f"Error consultando WHOIS para {domain_name}")
+        return False
 
 # Leer archivos de entrada
 try:
@@ -98,18 +107,27 @@ with open(domain_file, 'r') as domains:
         else:
             domains_to_check.append(domain)
 
-# Verificación DNS
-domains_without_dns = [domain for domain in domains_to_check if not fast_domain_checker(domain, delay=False)]
+# Contador de progreso
+total_domains = len(domains_to_check)
+print(f"Total de dominios a analizar: {total_domains}")
 
-# Verificación WHOIS para dominios sin DNS
-unregistered_domains = [domain for domain in domains_without_dns if not is_registered(domain)]
+# Verificación DNS y WHOIS con contador de progreso
+unregistered_domains = []
+for index, domain in enumerate(domains_to_check, start=1):
+    print(f"Analizando {domain} ({index}/{total_domains})...")
+    
+    if not fast_domain_checker(domain, delay=False):
+        if not is_registered(domain):
+            unregistered_domains.append(domain)
+            print(f"{domain} está DISPONIBLE")
 
 # Generar archivo de salida
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 output_file = f"output_{timestamp}.txt"
 with open(output_file, 'w') as outfile:
     for domain in unregistered_domains:
-        outfile.write(f"{domain} está DISPONIBLE\n")
-        print(f"{domain} está DISPONIBLE")
-        
+        outfile.write(f"{domain}\n")
+
 print(f"\nArchivo de salida generado: {output_file}")
+print(f"Número total de dominios analizados: {total_domains}")
+print(f"Número de dominios disponibles: {len(unregistered_domains)}")
