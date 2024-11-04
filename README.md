@@ -31,7 +31,9 @@ Este repositorio contiene un script en Python que permite verificar si dominios 
 ## Instalación
 
 Instala los módulos ejecutando:
-- pip install python-whois dnspython
+```bash
+pip install python-whois dnspython
+```
 
 ## Uso
 Para ejecutar el script, utiliza el siguiente comando en la terminal:
@@ -42,14 +44,18 @@ python script.py archivo_dominio.txt [extensions.txt]
 ## Ejemplo
 Supón que tienes un archivo entrada.txt con el siguiente contenido:
 
+```
 example
 test@example.com
 website.net
+```
 
 Y un archivo extensions.txt con:
+```
 com
 org
 co
+```
 
 La salida se imprimirá en pantalla y se guardará en un archivo de texto llamado output_YYYYMMDDHHMMSS.txt, donde YYYYMMDDHHMMSS representa la fecha y hora de ejecución del script. El archivo de salida incluirá únicamente los dominios no registrados, en el siguiente formato:
 
@@ -60,9 +66,9 @@ website.net está DISPONIBLE
 ```
 
 ## Notas
-Delay: El script introduce un retardo aleatorio en la verificación whois para evitar sobrecargar los servidores y cumplir con las políticas de uso de whois.
-Compatibilidad: Este script está diseñado para sistemas basados en UNIX/Linux. Si deseas ejecutarlo en Windows, pueden ser necesarios ajustes adicionales.
-Limitación para dominios .es: Debido a restricciones del módulo whois, este script puede no funcionar de manera confiable para dominios .es.
+1. Delay: El script introduce un retardo aleatorio en la verificación whois para evitar sobrecargar los servidores y cumplir con las políticas de uso de whois.
+2. Compatibilidad: Este script está diseñado para sistemas basados en UNIX/Linux. Si deseas ejecutarlo en Windows, pueden ser necesarios ajustes adicionales.
+3. Limitación para dominios .es: Debido a restricciones del módulo whois, este script puede no funcionar de manera confiable para dominios .es.
 
 ## Contribuciones
 ¡Las contribuciones son bienvenidas! Si tienes ideas para mejorar el proyecto, no dudes en abrir un issue o enviar un pull request.
